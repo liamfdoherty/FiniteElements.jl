@@ -1,9 +1,13 @@
 export
 
 # Elements
-    Node
-    Element
-    BasisFunction
+    Node,
+    Element,
+    BasisFunction,
 
     # Functions
-    get_coordinates
+    get_coordinates,
+    get_barycenter,
+
+# Grids
+    Grid

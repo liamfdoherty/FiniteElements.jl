@@ -21,7 +21,7 @@ An `Element` is a triangle in the triangulation of the domain
 struct Element
     vertices::Set{Node}
 end
-funtion get_barycenter(e::Element)
+function get_barycenter(e::Element)
     barycenter = zeros(2)
     for vertex in e.vertices
         barycenter = barycenter .+ vertex
@@ -38,10 +38,58 @@ A `BasisFunction` is a (linear) function defined over a set of elements
                     the union of these compactly supported planes defines the basis function at an interior node
 """
 struct BasisFunction
-    interpolants::Dict{Set{Element}, Vector{Float64}}
+    interpolants::Dict{Element, Vector{Float64}}
 end
 function BasisFunction(support::Set{Element})
-    interpolants = ()
+    # Check to make sure that the correct number of elements are present (not general, but a check for this problem)
+    if length(support) != 6
+        throw(ErrorException("Invalid support!"))
+    end
+
+    # Find all nodes that define the region of support for the basis function, and find the common node
+    all_nodes = Set([])
+    for element in support
+        union!(all_nodes, element.vertices)
+    end
+    remaining_nodes = all_nodes
+    for element in support
+        intersect!(remaining_nodes, element.vertices)
+    end
+    common_node = remaining_nodes
+
+    # Check to make sure that there is only one common node
+    if length(common_node) != 1
+        throw(ErrorException("Invalid support!"))
+    end
+
+    # Initialize set of interpolants and function values at the nodes
+    interpolants = []
+    for element in support
+        plane_points = []
+        apex = []
+        for node in element.vertices
+            point = [coordinate for coordinate in get_coordinates(node)]
+            if node in common_node # Check if the node is the common node; if so, assign it a function value of 1
+                push!(point, 1.)
+                apex = point
+            else # Otherwise, assign it a function value of 0
+                push!(point, 0.)
+            end
+            push!(plane_points, point)
+        end
+
+        # Compute the linear interpolant over the element
+        vecA = [x - y for (x,y) in zip(plane_points[1], plane_points[2])]
+        vecB = [x - y for (x,y) in zip(plane_points[2], plane_points[3])]
+        n = cross(vecA, vecB)
+        interpolant = Vector{Float64}(undef, 3)
+        interpolant[1] = -n[1]/n[3]
+        interpolant[2] = -n[2]/n[3]
+        interpolant[3] = n[1]*apex[1]/n[3] + n[2]*apex[2]/n[3] + apex[3]
+        push!(interpolants, interpolant)
+    end
+
+    # Package the interpolants with their corresponding elements
     interpolants = Dict(zip(support, interpolants))
     return BasisFunction(interpolants)
 end
