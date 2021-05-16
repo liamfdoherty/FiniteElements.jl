@@ -10,6 +10,13 @@ end
 function Node(x::Vector{Float64})
     return Node(NTuple{2, Float64}(x))
 end
+
+"""
+`get_coordinates` - get the coordinates of an input node
+
+### Fields
+`n` - input node
+"""
 get_coordinates(n::Node) = n.x
 
 """
@@ -21,6 +28,16 @@ An `Element` is a triangle in the triangulation of the domain
 struct Element
     vertices::Set{Node}
 end
+function Element(nodes::Vector{Node})
+    return Element(Set(nodes))
+end
+
+"""
+`get_barycenter` - compute the barycenter of an element (for the barycentric quadrature rule)
+
+### Fields:
+* `e` - input element
+"""
 function get_barycenter(e::Element)
     barycenter = zeros(2)
     for vertex in e.vertices

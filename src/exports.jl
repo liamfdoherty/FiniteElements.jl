@@ -10,4 +10,7 @@ export
     get_barycenter,
 
 # Grids
-    Grid
+    Grid,
+
+    # Functions
+    generate_elements

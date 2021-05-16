@@ -1,13 +1,21 @@
 using FiniteElements
 
+# Define a grid
 h = 1/3
 grid = Grid(h)
 
-support = Set([Element(Set([grid.points[6], grid.points[1], grid.points[5]])),
-                Element(Set([grid.points[6], grid.points[1], grid.points[2]])),
-                Element(Set([grid.points[6], grid.points[2], grid.points[7]])),
-                Element(Set([grid.points[6], grid.points[7], grid.points[11]])),
-                Element(Set([grid.points[6], grid.points[7], grid.points[10]])),
-                Element(Set([grid.points[6], grid.points[5], grid.points[10]]))])
+# Define the set of elements on the grid
+elements = generate_elements(grid)
 
-basis1 = BasisFunction(support)
+# Compute the basis functions at the interior nodes
+basis_functions = []
+for point in grid.interior_points
+    # compute the basis function at that point
+    support = Vector{Element}()
+    for element in elements
+        if point in element.vertices
+            push!(support, element)
+        end
+    end
+    push!(basis_functions, BasisFunction(Set(support)))
+end

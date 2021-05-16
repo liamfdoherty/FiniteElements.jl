@@ -1,5 +1,4 @@
 module FiniteElements
-using StaticArrays
 using GridInterpolations
 using LinearAlgebra
 
