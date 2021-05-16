@@ -8,6 +8,7 @@ export
     # Functions
     get_coordinates,
     get_barycenter,
+    get_area,
 
 # Grids
     Grid,

@@ -48,6 +48,20 @@ function get_barycenter(e::Element)
 end
 
 """
+`get_area` - compute the area of an element
+
+### Fields:
+* `e` - element to compute the area of
+"""
+function get_area(e::Element)
+    A, B, C = e.vertices
+    A_coords = get_coordinates(A)
+    B_coords = get_coordinates(B)
+    C_coords = get_coordinates(C)
+    return abs(A_coords[1]*(B_coords[2] - C_coords[2]) + B_coords[1]*(C_coords[2] - A_coords[2]) + C_coords[1]*(A_coords[2] - B_coords[2]))/2
+end
+
+"""
 A `BasisFunction` is a (linear) function defined over a set of elements
 
 ### Fields:
