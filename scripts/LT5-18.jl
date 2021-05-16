@@ -22,25 +22,36 @@ function finite_element_2d(f::Function, h::Float64)
 
     # Assemble stiffness matrix
     A = zeros((M - 1)^2, (M - 1)^2)
-    for i in 1:length(basis_functions), j in 1:length(basis_functions)
-        Φᵢ = basis_functions[i]; Φⱼ = basis_functions[j]
-        support_i = collect(keys(Φᵢ.interpolants)); support_j = collect(keys(Φⱼ.interpolants))
-        overlapping_support = intersect(support_i, support_j)
-        if length(overlapping_support) == 0
-            continue
-        else
-            # Compute the sum of the bilinear form over each element in the common support
-            sum = 0
-            for element in overlapping_support
-                sum += dot(Φᵢ.interpolants[element][1:2], Φⱼ.interpolants[element][1:2]) * get_area(element)
-            end
-            A[i, j] = sum
-        end
+    for (i, Φᵢ) in enumerate(basis_functions), (j, Φⱼ) in enumerate(basis_functions)
+        A[i, j] = compute_bilinear_form(Φᵢ, Φⱼ)
     end
 
     # Assemble load vector
     b = zeros((M - 1)^2)
+    for (index, basis_function) in enumerate(basis_functions)
+        b[index] = compute_linear_functional(f, basis_function)
+    end
+
+    # Solve system
+    U = A\b
+
+    return U
+end
+
+# Define the problem and true solution
+function f(x, y)
+    return sin(π*x)sin(π*y) + sin(π*x)sin(2*π*y)
+end
+
+function TrueSolution(x, y)
+   return 1/(2*π^2) * sin(π*x)sin(π*y) +  1/(5*π^2) * sin(π*x)sin(2*π*y)
+end
 
 
-    return A
+# Obtain solution
+h_vals = [1/10, 1/20, 1/50]
+for h in h_vals
+    solution = finite_element_2d(f, h)
+    plt = plot(h:h:1-h, h:h:1-h, solution, st=:surface, title = "Numerical Solution; h = $(h)")
+    display(plt)
 end

@@ -41,7 +41,7 @@ end
 function get_barycenter(e::Element)
     barycenter = zeros(2)
     for vertex in e.vertices
-        barycenter = barycenter .+ vertex
+        barycenter = barycenter .+ get_coordinates(vertex)
     end
     barycenter = barycenter ./ 3
     return barycenter

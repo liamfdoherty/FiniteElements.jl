@@ -14,4 +14,8 @@ export
     Grid,
 
     # Functions
-    generate_elements
+    generate_elements,
+
+# Quadrature
+    compute_bilinear_form,
+    compute_linear_functional
