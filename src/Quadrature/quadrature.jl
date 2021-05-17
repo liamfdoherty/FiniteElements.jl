@@ -45,8 +45,28 @@ end
 * `TrueSolution` - the true solution of the PDE
 * `NumericalSolution` - the numerical solution of the PDE using finite elements
 """
-function compute_error(TrueSolution::Function, NumericalSolution)
+function compute_error(TrueSolution::Function, NumericalSolution::Vector{Float64}, h::Float64)
+    grid = Grid(h)
+    elements = generate_elements(grid)
+
     error = 0.
-    
+
+    for element in elements
+        vertices = element.vertices
+        barycenter = get_barycenter(element)
+        area = get_area(element)
+
+        value_at_barycenter = 0.
+        for vertex in vertices
+            index = findall(x->x==vertex, grid.points)[1]
+            value_at_vertex = NumericalSolution[index]
+            value_at_barycenter += value_at_vertex
+        end
+        value_at_barycenter = value_at_barycenter/3
+
+        true_barycenter_value = TrueSolution(barycenter[1], barycenter[2])
+        error += (true_barycenter_value - value_at_barycenter)^2 * area
+    end
+    error = sqrt(error)
     return error
 end

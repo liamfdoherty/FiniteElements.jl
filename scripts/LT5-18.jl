@@ -48,7 +48,7 @@ end
 
 
 # Obtain solution
-h_vals = [1/10, 1/20, 1/50]
+h_vals = [1/10, 1/20]
 for h in h_vals
     NumericalSolution = finite_element_2d(f, h)
 
@@ -64,7 +64,7 @@ for h in h_vals
     display(plt)
 
     # Compute the error
-    error = compute_error(TrueSolution, NumericalSolution)
+    error = compute_error(TrueSolution, NumericalSolution, h)
     println("Error of solution for h = $(h): $(error)")
 end
 
