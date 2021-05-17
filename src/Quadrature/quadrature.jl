@@ -37,3 +37,16 @@ function compute_linear_functional(f::Function, Φ::BasisFunction)
     end
     return sum
 end
+
+"""
+`compute_error` - cmopute the L² norm of the error
+
+### Fields
+* `TrueSolution` - the true solution of the PDE
+* `NumericalSolution` - the numerical solution of the PDE using finite elements
+"""
+function compute_error(TrueSolution::Function, NumericalSolution)
+    error = 0.
+    
+    return error
+end

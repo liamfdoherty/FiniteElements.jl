@@ -18,4 +18,5 @@ export
 
 # Quadrature
     compute_bilinear_form,
-    compute_linear_functional
+    compute_linear_functional,
+    compute_error

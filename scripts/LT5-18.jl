@@ -1,4 +1,4 @@
-using FiniteElements, LinearAlgebra
+using FiniteElements, LinearAlgebra, Plots
 
 function finite_element_2d(f::Function, h::Float64)
     # Define a grid
@@ -34,7 +34,6 @@ function finite_element_2d(f::Function, h::Float64)
 
     # Solve system
     U = A\b
-
     return U
 end
 
@@ -51,7 +50,24 @@ end
 # Obtain solution
 h_vals = [1/10, 1/20, 1/50]
 for h in h_vals
-    solution = finite_element_2d(f, h)
-    plt = plot(h:h:1-h, h:h:1-h, solution, st=:surface, title = "Numerical Solution; h = $(h)")
+    NumericalSolution = finite_element_2d(f, h)
+
+    # Insert boundary conditions into the solution
+    M = Int(1/h)
+    sol = reshape(NumericalSolution, (M - 1, M - 1))
+    NumericalSolution = zeros(M + 1, M + 1)
+    NumericalSolution[2:M, 2:M] = sol
+    NumericalSolution = vec(NumericalSolution)
+
+    # Plot the solution
+    plt = plot(0:h:1, 0:h:1, NumericalSolution, st=:surface, title = "Numerical Solution; h = $(h)")
     display(plt)
+
+    # Compute the error
+    error = compute_error(TrueSolution, NumericalSolution)
+    println("Error of solution for h = $(h): $(error)")
 end
+
+# Plot the true solution
+trueplt = plot(0:0.01:1, 0:0.01:1, TrueSolution, st=:surface, title = "True Solution")
+display(trueplt)
